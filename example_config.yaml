@@ -1,0 +1,158 @@
+#!syntax yaml
+# Configuration file for EEG/MEG preprocessing
+
+# Directories
+input_dir: "C:\\Users\\최윤혁\\Desktop\\연구_2025\\0_EEG_Preprocessing\\EEG_Sandbox\\TESTFILES"
+output_dir: "C:\\Users\\최윤혁\\Desktop\\연구_2025\\0_EEG_Preprocessing\\EEG_Sandbox\\output_files"
+
+# Band-pass filter parameters
+lowcut_hz: 1.0
+highcut_hz: 40.0
+
+# Notch filter parameters
+notch_hz: 50.0
+
+# Filter design parameters
+filter_order: 4
+
+# Resampling frequency
+resample_sfreq: 250
+
+# Number of parallel workers for processing
+num_workers: 2
+
+# Dictionary mapping channel names to their types
+channels_dict:
+  # EEG (Electroencephalogram)
+  C3: eeg
+  C4: eeg
+  Cz: eeg
+  F3: eeg
+  F4: eeg
+  F7: eeg
+  F8: eeg
+  Fz: eeg
+  Fp1: eeg
+  Fp2: eeg
+  Fpz: eeg
+  M1: eeg
+  M2: eeg
+  O1: eeg
+  O2: eeg
+  Oz: eeg
+  P3: eeg
+  P4: eeg
+  Pz: eeg
+  T3: eeg
+  T4: eeg
+  T5: eeg
+  T6: eeg
+  T1: eeg
+  T2: eeg
+
+  # ECG (Electrocardiogram)
+  EKG: ecg
+  'ECG-RA': ecg
+  'ECG-LL': ecg
+  'ECG-V1': ecg
+  'ECG-V2': ecg
+
+  # EOG (Electrooculogram)
+  LOC: eog
+  ROC: eog
+
+  # EMG (Electromyogram)
+  CHIN1: emg
+  CHIN2: emg
+  CHIN3: emg
+  'RAT1-RAT2': emg
+  'LAT1-LAT2': emg
+
+  # Respiration
+  Snore: resp
+  Airflow: resp
+  Pressure: resp
+  Flow_DR: resp
+  Snore_DR: resp
+  Abdomen: resp
+  Chest: resp
+  Phase: resp
+  RR: resp
+  XSum: resp
+  XFlow: resp
+  XVolume: resp
+  CFlow: resp
+  Leak: resp
+  IPAP: resp
+  EPAP: resp
+  Press: resp
+
+  # Other Biological Signals
+  PPG: bio
+  PTT: bio
+  Pleth: bio
+  Tcco2: bio
+  SpO2: bio
+  PR: bio
+
+  # Temperature
+  Body: temperature
+
+  # Stimulus / Trigger
+  TRIG: stim
+
+  # Miscellaneous / Unknown
+  SP1: misc
+  SP2: misc
+  X30: misc
+  X31: misc
+  X32: misc
+  'DIF1+-DIF1-': misc
+  'DIF2+-DIF2-': misc
+  'DIF3+-DIF3-': misc
+  'DIF4+-DIF4-': misc
+  'DIF5+-DIF5-': misc
+  'DIF6+-DIF6-': misc
+  'DIF7+-DIF7-': misc
+  'DIF8+-DIF8-': misc
+  'DIF9+-DIF9-': misc
+  'DIF10+-DIF10-': misc
+  RMI: misc
+  Position: misc
+  Elevation: misc
+  Activity: misc
+  DC13: misc
+  DC14: misc
+  DC15: misc
+  DC16: misc
+  DC7: misc
+  DC8: misc
+  DC9: misc
+  DC10: misc
+  DC12: misc
+  PulseQuality: misc
+
+# Dictionary indicating which channel types to process (true = process, false = exclude)
+# Resampling applies to all channels, Filtering only to selected types
+channels_to_process:
+  bio: false
+  chpi: false
+  csd: false
+  dbs: false
+  dipole: false
+  ecg: true
+  ecog: false
+  eeg: true
+  emg: false
+  eog: false
+  exci: false
+  gof: false
+  gsr: false
+  ias: false
+  misc: false
+  ref_meg: false
+  resp: false
+  seeg: false
+  stim: false
+  syst: false
+  temperature: false

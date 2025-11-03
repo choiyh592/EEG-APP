@@ -1,1 +1,3 @@
-Essentially an MNE wrapper for preprocessing EEG data with a focus on modularity and ease of use.
+Essentially an MNE wrapper for preprocessing EEG data.
+
+WIP
