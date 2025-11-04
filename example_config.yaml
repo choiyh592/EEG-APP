@@ -16,10 +16,13 @@ notch_hz: 50.0
 filter_order: 4
 
 # Resampling frequency
-resample_sfreq: 250
+resample_sfreq: 256
 
 # Number of parallel workers for processing
 num_workers: 2
+
+# Whether to use GPU acceleration (if available)
+use_gpu: true
 
 # Dictionary mapping channel names to their types
 channels_dict:

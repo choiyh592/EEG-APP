@@ -5,7 +5,6 @@ import multiprocessing
 import os
 import time
 import mne
-import numpy as np
 import glob
 
 logging.basicConfig(level=logging.INFO, format='%(asctime)s - %(levelname)s - %(message)s')
@@ -175,8 +174,5 @@ class Preprocessor:
         print("=======================================")
 
 if __name__ == "__main__":
-    # Example usage
-    config_path = "config/preprocessing_config.yaml"
-    preprocessor = Preprocessor(config_path)
-    preprocessor.run_preprocessing()
+    pass
     
