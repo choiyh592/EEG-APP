@@ -1,3 +1,3 @@
-from ._preprocessing import Preprocessor
+from ._preprocessing import Preprocessor, BipolarPreprocessor
 
-__all__ = ['Preprocessor']
+__all__ = ['Preprocessor', 'BipolarPreprocessor']
