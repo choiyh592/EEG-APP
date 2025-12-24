@@ -2,7 +2,6 @@ import h5py
 import mne
 import numpy as np
 
-
 def preprocessing_cnt(cntFilePath, l_freq=0.1, h_freq=75.0, sfreq:int=200):
     # reading cnt
     raw = mne.io.read_raw_cnt(cntFilePath, preload=True, data_format='int32')

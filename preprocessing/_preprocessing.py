@@ -31,6 +31,9 @@ class Preprocessor:
         self.channels_to_process = config['channels_to_process']
         self.channels_to_keep = config.get('channels_to_keep', [])
         self.channels_to_rename = config.get('channels_to_rename', {})
+        self.annotation_text = '_processed_raw.fif'
+
+        mne.set_log_level('ERROR')  # Suppress MNE info logs
 
         # Build the arguments for mne.pick_types
         # This creates a dict like {'eeg': True, 'ecg': True}
@@ -62,7 +65,7 @@ class Preprocessor:
         for i, input_file in enumerate(input_files):
             filename = os.path.basename(input_file)
             output_file = os.path.join(self.output_dir, filename)
-            output_file = output_file.replace('.EDF', '_processed.fif').replace('.edf', '_processed.fif')
+            output_file = output_file.replace('.EDF', self.annotation_text).replace('.edf', self.annotation_text)
             os.makedirs(os.path.join(self.output_dir), exist_ok=True)
             file_pairs.append((input_file, output_file))
         
@@ -79,8 +82,8 @@ class Preprocessor:
         
         try:
             # 1. Load file header without data (memory efficient)
-            # We set verbose='DEBUG' to hide excessive MNE output
-            raw = mne.io.read_raw_edf(input_file, preload=False, verbose='DEBUG')
+            # We set verbose='ERROR' to hide excessive MNE output
+            raw = mne.io.read_raw_edf(input_file, preload=False, verbose='ERROR')
             
             # Rename channels if specified
             if self.channels_to_rename:
@@ -103,7 +106,7 @@ class Preprocessor:
             }
             
             if ch_types_dict:
-                raw.set_channel_types(ch_types_dict, verbose='DEBUG')
+                raw.set_channel_types(ch_types_dict, verbose='ERROR')
 
             # 3. Get picks for processing
             # We use the picks_args we built in __init__
@@ -126,7 +129,7 @@ class Preprocessor:
                 l_trans_bandwidth='auto', 
                 h_trans_bandwidth='auto',
                 fir_design='firwin',
-                verbose='DEBUG'
+                verbose='ERROR'
             )
             
             # Notch filter
@@ -136,14 +139,14 @@ class Preprocessor:
                 filter_length='auto',
                 trans_bandwidth=0.5,
                 fir_design='firwin',
-                verbose='DEBUG'
+                verbose='ERROR'
             )
             
             # Resample (this is applied *only* to the loaded data)
-            raw.resample(sfreq=self.resample_sfreq, verbose='DEBUG')
+            raw.resample(sfreq=self.resample_sfreq, verbose='ERROR')
             
             # 6. Save the raw object
-            raw.save(output_file, overwrite=True, verbose='DEBUG')
+            raw.save(output_file, overwrite=True, verbose='ERROR')
             return (input_file,f"Success")
 
         except Exception as e:
@@ -217,6 +220,9 @@ class BipolarPreprocessor(Preprocessor):
     A child class of Preprocessor that applies a TCP Bipolar Montage 
     to the data before saving.
     """
+    def __init__(self, config_path):
+        super().__init__(config_path)
+        self.annotation_text = '_processed_bipolar_raw.fif'
 
     def _make_bipolar(self, raw):
         """
@@ -256,7 +262,7 @@ class BipolarPreprocessor(Preprocessor):
             new_info['highpass'] = raw.info['highpass']
             new_info['lowpass'] = raw.info['lowpass']
 
-        new_raw = mne.io.RawArray(new_data, new_info, verbose='DEBUG')
+        new_raw = mne.io.RawArray(new_data, new_info, verbose='ERROR')
 
         if raw.annotations:
             new_raw.set_annotations(raw.annotations)
@@ -271,7 +277,7 @@ class BipolarPreprocessor(Preprocessor):
         
         try:
             # --- Steps 1-3: Load and Basic Setup (Copied from Parent) ---
-            raw = mne.io.read_raw_edf(input_file, preload=False, verbose='DEBUG')
+            raw = mne.io.read_raw_edf(input_file, preload=False, verbose='ERROR')
             
             if self.channels_to_rename:
                 raw.rename_channels(self.channels_to_rename, on_missing='ignore')
@@ -283,7 +289,7 @@ class BipolarPreprocessor(Preprocessor):
             known_channels_in_file = file_channels.intersection(self.channels_dict.keys())
             ch_types_dict = {ch: self.channels_dict[ch] for ch in known_channels_in_file}
             if ch_types_dict:
-                raw.set_channel_types(ch_types_dict, verbose='DEBUG')
+                raw.set_channel_types(ch_types_dict, verbose='ERROR')
 
             picks_to_process = mne.pick_types(raw.info, **self.picks_args)
             if len(picks_to_process) == 0:
@@ -299,7 +305,7 @@ class BipolarPreprocessor(Preprocessor):
                 l_trans_bandwidth='auto', 
                 h_trans_bandwidth='auto',
                 fir_design='firwin',
-                verbose='DEBUG'
+                verbose='ERROR'
             )
             
             raw.notch_filter(
@@ -308,14 +314,14 @@ class BipolarPreprocessor(Preprocessor):
                 filter_length='auto',
                 trans_bandwidth=0.5,
                 fir_design='firwin',
-                verbose='DEBUG'
+                verbose='ERROR'
             )
             
-            raw.resample(sfreq=self.resample_sfreq, verbose='DEBUG')
+            raw.resample(sfreq=self.resample_sfreq, verbose='ERROR')
 
             bipolar_raw = self._make_bipolar(raw)
 
-            bipolar_raw.save(output_file, overwrite=True, verbose='DEBUG')
+            bipolar_raw.save(output_file, overwrite=True, verbose='ERROR')
             
             return (input_file, "Success")
 
