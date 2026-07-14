@@ -11,7 +11,7 @@ import glob
 logging.basicConfig(level=logging.INFO, format='%(asctime)s - %(levelname)s - %(message)s')
 
 class Preprocessor:
-    def __init__(self, config_yaml_path):
+    def __init__(self, config_yaml_path, rename_files=False):
         """
         Initialize the Preprocessor with configuration from a YAML file.    
         """
@@ -31,12 +31,11 @@ class Preprocessor:
         self.channels_to_process = config['channels_to_process']
         self.channels_to_keep = config.get('channels_to_keep', [])
         self.channels_to_rename = config.get('channels_to_rename', {})
+        self.rename_files = rename_files
         self.annotation_text = '_processed_raw.fif'
 
         mne.set_log_level('ERROR')  # Suppress MNE info logs
 
-        # Build the arguments for mne.pick_types
-        # This creates a dict like {'eeg': True, 'ecg': True}
         self.picks_args = {
             ch_type: included 
             for ch_type, included in self.channels_to_process.items()
@@ -145,6 +144,13 @@ class Preprocessor:
             # Resample (this is applied *only* to the loaded data)
             raw.resample(sfreq=self.resample_sfreq, verbose='ERROR')
             
+            # Rename file to "PID_Y_M_D_H_M_S_processed_raw.fif" if required
+            if self.rename_files:
+                info = raw.info
+                base_dir = os.path.dirname(output_file)
+                new_filename = f"{info['subject_info']['his_id']}_{info['meas_date'].strftime('%Y_%m_%d_%H_%M_%S')}{self.annotation_text}"
+                output_file = os.path.join(base_dir, new_filename)
+
             # 6. Save the raw object
             raw.save(output_file, overwrite=True, verbose='ERROR')
             return (input_file,f"Success")
@@ -220,8 +226,8 @@ class BipolarPreprocessor(Preprocessor):
     A child class of Preprocessor that applies a TCP Bipolar Montage 
     to the data before saving.
     """
-    def __init__(self, config_path):
-        super().__init__(config_path)
+    def __init__(self, config_path, rename_files=False):
+        super().__init__(config_path, rename_files=rename_files)
         self.annotation_text = '_processed_bipolar_raw.fif'
 
     def _make_bipolar(self, raw):
@@ -320,6 +326,13 @@ class BipolarPreprocessor(Preprocessor):
             raw.resample(sfreq=self.resample_sfreq, verbose='ERROR')
 
             bipolar_raw = self._make_bipolar(raw)
+
+            # Rename file to "PID_Y_M_D_H_M_S_processed_bipolar_raw.fif" if required
+            if self.rename_files:
+                info = raw.info
+                base_dir = os.path.dirname(output_file)
+                new_filename = f"{info['subject_info']['his_id']}_{info['meas_date'].strftime('%Y_%m_%d_%H_%M_%S')}{self.annotation_text}"
+                output_file = os.path.join(base_dir, new_filename)
 
             bipolar_raw.save(output_file, overwrite=True, verbose='ERROR')
             

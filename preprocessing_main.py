@@ -7,13 +7,14 @@ if __name__ == '__main__':
     parser.add_argument('--config', type=Path, required=True, help='Path to preprocessing configuration .yaml file')
     parser.add_argument('--std', action='store_true', default=True, help='Use standard 10-20 montage for preprocessing')
     parser.add_argument('--bipolar', action='store_false', help='Use bipolar montage for preprocessing', dest='std')
+    parser.add_argument('--rename_files', action='store_true', default=False, help='Rename Filenames to their PIDs')
 
     args = parser.parse_args()
 
     if args.std:
-        preprocessor = Preprocessor(args.config)
+        preprocessor = Preprocessor(args.config, args.rename_files)
     else:
-        preprocessor = BipolarPreprocessor(args.config)
+        preprocessor = BipolarPreprocessor(args.config, args.rename_files)
 
     preprocessor.run_preprocessing()
 

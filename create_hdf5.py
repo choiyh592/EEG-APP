@@ -19,7 +19,7 @@ from hdf5_utils.utils import h5Dataset
 from hdf5_utils.utils import process_fif
 
 if __name__ == '__main__':
-    parser = argparse.ArgumentParser('EEG Preprocessing Script', add_help=False)
+    parser = argparse.ArgumentParser('EEG to HDF5 Conversion', add_help=False)
     parser.add_argument('--rawpath', type=Path, required=True, help='Path to raw EEG .fif files')
     parser.add_argument('--savepath', type=Path, required=True, help='Path to save HDF5 Dataset')
     parser.add_argument('--rsfreq', type=int, default=256, help='Resampling frequency')
